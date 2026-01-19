@@ -5,17 +5,17 @@ import {
   Lightbulb, 
   FileText, 
   Mail, 
-  Linkedin,
-  Phone,
-  ArrowRight,
-  ShieldCheck,
-  Globe,
-  Play,
-  Menu,
-  X,
-  ChevronRight,
-  Stethoscope,
-  Activity
+  Linkedin, 
+  Phone, 
+  ArrowRight, 
+  ShieldCheck, 
+  Globe, 
+  Play, 
+  Menu, 
+  X, 
+  ChevronRight, 
+  Stethoscope, 
+  Activity 
 } from 'lucide-react';
 
 const RAW_URL = "https://raw.githubusercontent.com/tomthias/fraido-website/assets/website-assets";
@@ -93,6 +93,19 @@ const App: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, href: string) => {
+    e.preventDefault();
+    const targetId = href.replace('#', '');
+    const element = document.getElementById(targetId);
+    if (element) {
+      window.scrollTo({
+        top: element.offsetTop - 80,
+        behavior: 'smooth'
+      });
+      setIsMenuOpen(false);
+    }
+  };
+
   const navLinks = [
     { name: 'Idea', href: '#idea' },
     { name: 'Team', href: '#team' },
@@ -123,6 +136,7 @@ const App: React.FC = () => {
                 <a 
                   key={item.name} 
                   href={item.href} 
+                  onClick={(e) => scrollToSection(e, item.href)}
                   className={`text-[10px] font-semibold tracking-[0.2em] font-special uppercase transition-all hover:scale-105 ${
                     scrolled ? 'text-gray-500 hover:text-fraido-blue' : 'text-white/80 hover:text-white'
                   }`}
@@ -132,6 +146,7 @@ const App: React.FC = () => {
               ))}
               <a 
                 href="#contacts" 
+                onClick={(e) => scrollToSection(e, '#contacts')}
                 className={`text-[10px] font-semibold px-8 py-3 rounded-xl tracking-widest transition-all shadow-md font-special active:scale-95 ${
                   scrolled 
                     ? 'bg-fraido-blue text-white hover:bg-blue-600' 
@@ -160,7 +175,7 @@ const App: React.FC = () => {
               <a 
                 key={item.name} 
                 href={item.href} 
-                onClick={() => setIsMenuOpen(false)}
+                onClick={(e) => scrollToSection(e, item.href)}
                 className="text-[12px] font-semibold tracking-[0.2em] font-special uppercase text-gray-500 hover:text-fraido-blue"
               >
                 {item.name}
@@ -168,7 +183,7 @@ const App: React.FC = () => {
             ))}
             <a 
               href="#contacts" 
-              onClick={() => setIsMenuOpen(false)}
+              onClick={(e) => scrollToSection(e, '#contacts')}
               className="bg-fraido-blue text-white text-[10px] font-semibold px-10 py-4 rounded-2xl tracking-widest font-special shadow-lg"
             >
               GET IN TOUCH
@@ -177,7 +192,7 @@ const App: React.FC = () => {
         </div>
       </nav>
 
-      {/* Hero Section - Refined as per Screenshot */}
+      {/* Hero Section */}
       <header className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
         <div className="absolute inset-0 animate-gradient"></div>
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
@@ -186,8 +201,8 @@ const App: React.FC = () => {
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="flex flex-col items-center text-center">
-            <div className="mb-8 animate-fade-in-up">
-               <span className="px-8 py-3 rounded-full glass text-white text-[10px] font-semibold tracking-[0.3em] border border-white/20 font-special uppercase backdrop-blur-xl">
+            <div className="mb-8">
+               <span className="px-8 py-3 rounded-full glass text-fraido-blue text-[10px] font-semibold tracking-[0.3em] border border-white/20 font-special uppercase backdrop-blur-xl">
                 Faster access. Fewer tools.
                </span>
             </div>
@@ -201,11 +216,12 @@ const App: React.FC = () => {
                 Life in control. Minimal diameter.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-6">
-                <a href="#idea" className="px-14 py-5 bg-white text-fraido-blue rounded-2xl font-bold shadow-2xl hover:shadow-white/20 hover:scale-105 transition-all flex items-center justify-center gap-3 font-special text-[11px] tracking-widest group">
+                <a 
+                  href="#idea" 
+                  onClick={(e) => scrollToSection(e, '#idea')}
+                  className="px-14 py-5 bg-white text-fraido-blue rounded-2xl font-bold shadow-2xl hover:bg-fraido-blue hover:text-white hover:shadow-white/20 hover:scale-105 transition-all flex items-center justify-center gap-3 font-special text-[11px] tracking-widest group"
+                >
                   EXPLORE OUR IDEA <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                </a>
-                <a href="#resources" className="px-14 py-5 bg-white/20 backdrop-blur-md text-white rounded-2xl font-bold hover:bg-white/30 transition-all border border-white/20 font-special text-[11px] tracking-widest flex items-center justify-center">
-                  RESOURCES
                 </a>
               </div>
             </div>
@@ -263,7 +279,7 @@ const App: React.FC = () => {
                   </p>
                 </div>
                 <div className="pt-6">
-                  <a href="#resources" className="inline-flex items-center gap-4 text-fraido-blue font-special text-[11px] tracking-[0.2em] uppercase font-bold group">
+                  <a href="#resources" onClick={(e) => scrollToSection(e, '#resources')} className="inline-flex items-center gap-4 text-fraido-blue font-special text-[11px] tracking-[0.2em] uppercase font-bold group">
                     Discover clinical details <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                   </a>
                 </div>
@@ -462,8 +478,8 @@ const App: React.FC = () => {
             </div>
             <div className="flex flex-col items-center md:items-end gap-10">
               <div className="flex gap-12 text-[11px] font-bold text-gray-400 tracking-[0.2em] font-special uppercase">
-                <a href="#" className="hover:text-fraido-blue transition-colors">Privacy</a>
-                <a href="#" className="hover:text-fraido-blue transition-colors">Legal</a>
+                <a href="#" onClick={(e) => scrollToSection(e, '#')} className="hover:text-fraido-blue transition-colors">Privacy</a>
+                <a href="#" onClick={(e) => scrollToSection(e, '#')} className="hover:text-fraido-blue transition-colors">Legal</a>
                 <a href="https://www.linkedin.com/company/fraido/" target="_blank" className="hover:text-fraido-blue transition-colors">LinkedIn</a>
               </div>
               <p className="text-[10px] font-semibold text-gray-300 tracking-widest font-special">© 2025 FRAIDO S.R.L. • ALL RIGHTS RESERVED</p>
