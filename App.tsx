@@ -111,8 +111,8 @@ const App: React.FC = () => {
         }`}>
           <div className="flex justify-between items-center">
             <a href="#" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform duration-500">
-                <span className="text-fraido-blue font-bold text-xl font-special">F</span>
+              <div className="w-10 h-10 rounded-xl bg-fraido-blue flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform duration-500">
+                <span className="text-white font-bold text-xl font-special">F</span>
               </div>
               <span className={`text-2xl font-semibold tracking-tighter font-special transition-colors ${scrolled ? 'text-fraido-blue' : 'text-white'}`}>Fraido</span>
             </a>
@@ -124,7 +124,7 @@ const App: React.FC = () => {
                   key={item.name} 
                   href={item.href} 
                   className={`text-[10px] font-semibold tracking-[0.2em] font-special uppercase transition-all hover:scale-105 ${
-                    scrolled ? 'text-gray-500 hover:text-fraido-blue' : 'text-white/90 hover:text-white'
+                    scrolled ? 'text-gray-500 hover:text-fraido-blue' : 'text-white/80 hover:text-white'
                   }`}
                 >
                   {item.name}
@@ -132,10 +132,10 @@ const App: React.FC = () => {
               ))}
               <a 
                 href="#contacts" 
-                className={`text-[10px] font-semibold px-8 py-3 rounded-xl tracking-widest transition-all shadow-md font-special active:scale-95 border ${
+                className={`text-[10px] font-semibold px-8 py-3 rounded-xl tracking-widest transition-all shadow-md font-special active:scale-95 ${
                   scrolled 
-                    ? 'bg-fraido-blue text-white hover:bg-blue-600 border-transparent' 
-                    : 'bg-white/10 text-white hover:bg-white/20 border-white/30 backdrop-blur-md'
+                    ? 'bg-fraido-blue text-white hover:bg-blue-600' 
+                    : 'bg-[#4A90E2] text-white hover:bg-blue-600 border border-white/20'
                 }`}
               >
                 GET IN TOUCH
@@ -144,7 +144,7 @@ const App: React.FC = () => {
 
             {/* Mobile Menu Toggle */}
             <button 
-              className="md:hidden p-2" 
+              className="md:hidden p-2 text-white" 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               style={{ color: scrolled ? '#4A90E2' : 'white' }}
             >
@@ -177,40 +177,34 @@ const App: React.FC = () => {
         </div>
       </nav>
 
-      {/* Hero Section - Upgraded with Dot Grid and Floating effects */}
-      <header className="relative min-h-screen flex items-center justify-center overflow-hidden hero-gradient">
-        {/* Animated Dot Grid Overlay */}
-        <div className="absolute inset-0 dot-pattern dot-pattern-animated opacity-30"></div>
+      {/* Hero Section - Refined as per Screenshot */}
+      <header className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+        <div className="absolute inset-0 animate-gradient"></div>
+        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
         
-        {/* Glow Effects */}
-        <div className="absolute top-[20%] right-[10%] w-[30rem] h-[30rem] bg-blue-300/20 rounded-full blur-[120px] pointer-events-none"></div>
-        <div className="absolute bottom-[20%] left-[10%] w-[25rem] h-[25rem] bg-white/10 rounded-full blur-[100px] pointer-events-none"></div>
+        <div className="absolute top-[35%] left-[25%] w-[40rem] h-[40rem] bg-white/10 rounded-full blur-[120px] pointer-events-none"></div>
 
         <div className="container mx-auto px-6 relative z-10">
-          <div className="flex flex-col items-center text-center animate-float">
-            <div className="mb-10 opacity-0 animate-[fadeIn_0.8s_ease-out_forwards]">
-               <span className="px-8 py-3 rounded-full bg-white/10 backdrop-blur-xl text-white text-[10px] font-semibold tracking-[0.3em] border border-white/20 font-special uppercase shadow-2xl">
+          <div className="flex flex-col items-center text-center">
+            <div className="mb-8 animate-fade-in-up">
+               <span className="px-8 py-3 rounded-full glass text-white text-[10px] font-semibold tracking-[0.3em] border border-white/20 font-special uppercase backdrop-blur-xl">
                 Faster access. Fewer tools.
                </span>
             </div>
             
-            <div className="relative mb-12 opacity-0 animate-[fadeIn_1s_ease-out_0.3s_forwards]">
-               <h1 className="text-8xl md:text-[14rem] font-bold text-white tracking-tighter leading-none drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)] select-none">
-                Fraido
-               </h1>
-               {/* Decorative border box similar to image */}
-               <div className="absolute -inset-x-8 -inset-y-4 border-2 border-white/20 rounded-[2rem] pointer-events-none hidden md:block"></div>
-            </div>
+            <h1 className="text-8xl md:text-[13rem] font-bold text-white tracking-tighter leading-none mb-10 drop-shadow-2xl select-none">
+              Fraido
+            </h1>
             
-            <div className="max-w-4xl text-white opacity-0 animate-[fadeIn_1s_ease-out_0.6s_forwards]">
-              <p className="text-xl md:text-2xl font-bold mb-16 tracking-[0.1em] font-special uppercase opacity-90">
+            <div className="max-w-4xl text-white">
+              <p className="text-xl md:text-2xl font-bold mb-14 tracking-[0.1em] font-special uppercase">
                 Life in control. Minimal diameter.
               </p>
-              <div className="flex flex-col sm:flex-row justify-center gap-8">
-                <a href="#idea" className="px-16 py-6 bg-white text-fraido-blue rounded-2xl font-bold shadow-[0_20px_40px_rgba(255,255,255,0.2)] hover:shadow-white/30 hover:scale-105 transition-all flex items-center justify-center gap-3 font-special text-[12px] tracking-widest group">
-                  EXPLORE OUR IDEA <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              <div className="flex flex-col sm:flex-row justify-center gap-6">
+                <a href="#idea" className="px-14 py-5 bg-white text-fraido-blue rounded-2xl font-bold shadow-2xl hover:shadow-white/20 hover:scale-105 transition-all flex items-center justify-center gap-3 font-special text-[11px] tracking-widest group">
+                  EXPLORE OUR IDEA <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </a>
-                <a href="#resources" className="px-16 py-6 bg-white/10 backdrop-blur-md text-white rounded-2xl font-bold hover:bg-white/20 transition-all border border-white/30 font-special text-[12px] tracking-widest flex items-center justify-center">
+                <a href="#resources" className="px-14 py-5 bg-white/20 backdrop-blur-md text-white rounded-2xl font-bold hover:bg-white/30 transition-all border border-white/20 font-special text-[11px] tracking-widest flex items-center justify-center">
                   RESOURCES
                 </a>
               </div>
@@ -218,8 +212,7 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Slant Transition to Content */}
-        <div className="absolute -bottom-1 left-0 right-0 h-40 bg-[#fcfcfd] clip-path-slant"></div>
+        <div className="absolute -bottom-1 left-0 right-0 h-32 bg-[#fcfcfd] clip-path-slant"></div>
       </header>
 
       <main>

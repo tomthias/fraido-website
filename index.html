@@ -13,7 +13,6 @@
       :root {
         --fraido-blue: #4A90E2;
         --fraido-light: #f0f7ff;
-        --hero-bg: #3a82d6;
       }
       body { 
         font-family: 'Inter', sans-serif;
@@ -24,48 +23,38 @@
       h1, h2, h3, .font-special {
         font-family: 'Special Gothic Expanded One', sans-serif;
       }
+      .bg-fraido-blue { background-color: var(--fraido-blue); }
+      .text-fraido-blue { color: var(--fraido-blue); }
+      .bg-fraido-light { background-color: var(--fraido-light); }
       
-      /* Header Background & Animations */
-      .hero-gradient {
-        background: radial-gradient(circle at 50% 50%, #5ba0f0 0%, #4a90e2 50%, #3b7ecf 100%);
+      @keyframes gradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
       }
-
-      .dot-pattern {
-        background-image: radial-gradient(rgba(255, 255, 255, 0.4) 1.5px, transparent 1.5px);
-        background-size: 32px 32px;
-        mask-image: linear-gradient(to bottom, white, transparent);
+      .animate-gradient {
+        background: linear-gradient(-45deg, #4A90E2, #63b3ed, #4299e1, #3182ce);
+        background-size: 400% 400%;
+        animation: gradient 15s ease infinite;
       }
-
-      .dot-pattern-animated {
-        animation: pulseDots 8s ease-in-out infinite alternate;
-      }
-
-      @keyframes pulseDots {
-        0% { opacity: 0.3; transform: scale(1); }
-        100% { opacity: 0.6; transform: scale(1.05); }
-      }
-
-      @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-15px); }
-        100% { transform: translateY(0px); }
-      }
-
-      .animate-float {
-        animation: float 6s ease-in-out infinite;
-      }
-
       .glass {
         background: rgba(255, 255, 255, 0.75);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         border: 1px solid rgba(255, 255, 255, 0.4);
       }
-
+      .glass-dark {
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
       .clip-path-slant {
         clip-path: polygon(0 100%, 100% 0, 100% 100%, 0% 100%);
       }
-
+      .perspective-1000 {
+        perspective: 1000px;
+      }
       .hover-lift {
         transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
