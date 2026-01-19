@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, 
   Lightbulb, 
@@ -10,16 +10,31 @@ import {
   ArrowRight,
   ShieldCheck,
   Globe,
-  Play
+  Play,
+  Menu,
+  X,
+  ChevronRight,
+  Stethoscope,
+  Activity
 } from 'lucide-react';
 
-const SectionHeader: React.FC<{ title: string; subtitle?: string; icon: React.ReactNode }> = ({ title, subtitle, icon }) => (
+const RAW_URL = "https://raw.githubusercontent.com/tomthias/fraido-website/assets/website-assets";
+
+const SectionHeader: React.FC<{ title: string; subtitle?: string; icon: React.ReactNode; dark?: boolean }> = ({ title, subtitle, icon, dark }) => (
   <div className="flex flex-col items-center mb-16 text-center">
-    <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-blue-50 text-fraido-blue text-[10px] font-semibold tracking-[0.1em] mb-6 border border-blue-100/50 font-special">
+    <div className={`inline-flex items-center gap-2 px-5 py-2 rounded-full text-[10px] font-semibold tracking-[0.2em] mb-6 border font-special transition-all hover:scale-105 cursor-default ${
+      dark 
+        ? "bg-white/10 text-white border-white/20" 
+        : "bg-blue-50 text-fraido-blue border-blue-100/50"
+    }`}>
       {icon}
-      <span>{title}</span>
+      <span>{title.toUpperCase()}</span>
     </div>
-    {subtitle && <h2 className="text-2xl md:text-4xl font-medium text-gray-900 tracking-tight max-w-4xl leading-tight">{subtitle}</h2>}
+    {subtitle && (
+      <h2 className={`text-3xl md:text-5xl font-medium tracking-tight max-w-4xl leading-tight ${dark ? "text-white" : "text-gray-900"}`}>
+        {subtitle}
+      </h2>
+    )}
   </div>
 );
 
@@ -28,12 +43,15 @@ const VideoCard: React.FC<{ title: string, subtitle: string, videoId: string, da
   const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
   return (
-    <div className="p-6 rounded-[2rem] bg-white/5 border border-white/10 hover:bg-white/[0.08] transition-colors group">
-      <div className="flex justify-between items-center mb-4">
-          <p className="text-[9px] font-semibold text-fraido-blue tracking-widest font-special">{date}</p>
-          <span className="text-[10px] text-white/30 font-medium">{subtitle}</span>
+    <div className="p-6 rounded-[2.5rem] bg-white/5 border border-white/10 hover:bg-white/[0.08] transition-all duration-500 group">
+      <div className="flex justify-between items-center mb-5">
+          <div className="flex flex-col">
+            <p className="text-[9px] font-semibold text-fraido-blue tracking-widest font-special mb-1">{date}</p>
+            <h4 className="text-sm font-medium text-white/90">{title}</h4>
+          </div>
+          <span className="text-[10px] text-white/30 font-medium tracking-widest uppercase">{subtitle}</span>
       </div>
-      <div className="aspect-video rounded-2xl overflow-hidden bg-black relative ring-1 ring-white/10 group-hover:ring-fraido-blue/50 transition-all">
+      <div className="aspect-video rounded-2xl overflow-hidden bg-black relative ring-1 ring-white/10 group-hover:ring-fraido-blue/50 transition-all shadow-2xl">
         {!isPlaying ? (
           <button 
             onClick={() => setIsPlaying(true)}
@@ -43,10 +61,10 @@ const VideoCard: React.FC<{ title: string, subtitle: string, videoId: string, da
             <img 
               src={thumbnailUrl} 
               alt={title} 
-              className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover/btn:opacity-80 transition-opacity"
+              className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover/btn:opacity-80 transition-opacity duration-700"
               loading="lazy"
             />
-            <div className="relative w-16 h-16 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 group-hover/btn:scale-110 group-hover/btn:bg-fraido-blue transition-all duration-300">
+            <div className="relative w-16 h-16 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 group-hover/btn:scale-110 group-hover/btn:bg-fraido-blue group-hover/btn:border-transparent transition-all duration-300 shadow-xl">
               <Play size={24} fill="white" className="text-white ml-1" />
             </div>
           </button>
@@ -65,137 +83,195 @@ const VideoCard: React.FC<{ title: string, subtitle: string, videoId: string, da
 };
 
 const App: React.FC = () => {
-  const RAW_URL = "https://raw.githubusercontent.com/tomthias/fraido-website/assets/website-assets";
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [showCookie, setShowCookie] = useState(true);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const navLinks = [
+    { name: 'Idea', href: '#idea' },
+    { name: 'Team', href: '#team' },
+    { name: 'Advisors', href: '#advisors' },
+    { name: 'Resources', href: '#resources' }
+  ];
 
   return (
-    <div className="min-h-screen scroll-smooth">
-      {/* Hero Section */}
-      <header className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 animate-gradient opacity-100"></div>
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+    <div className="min-h-screen bg-[#fcfcfd]">
+      {/* Navigation */}
+      <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 px-4 md:px-8 py-4 ${scrolled ? 'pt-4' : 'pt-8'}`}>
+        <div className={`max-w-7xl mx-auto rounded-[2.5rem] transition-all duration-500 border ${
+          scrolled 
+            ? 'glass shadow-2xl py-3 px-8 border-white/40' 
+            : 'bg-transparent py-4 px-10 border-transparent'
+        }`}>
+          <div className="flex justify-between items-center">
+            <a href="#" className="flex items-center gap-3 group">
+              <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform duration-500">
+                <span className="text-fraido-blue font-bold text-xl font-special">F</span>
+              </div>
+              <span className={`text-2xl font-semibold tracking-tighter font-special transition-colors ${scrolled ? 'text-fraido-blue' : 'text-white'}`}>Fraido</span>
+            </a>
+
+            {/* Desktop Nav */}
+            <div className="hidden md:flex gap-12 items-center">
+              {navLinks.map((item) => (
+                <a 
+                  key={item.name} 
+                  href={item.href} 
+                  className={`text-[10px] font-semibold tracking-[0.2em] font-special uppercase transition-all hover:scale-105 ${
+                    scrolled ? 'text-gray-500 hover:text-fraido-blue' : 'text-white/90 hover:text-white'
+                  }`}
+                >
+                  {item.name}
+                </a>
+              ))}
+              <a 
+                href="#contacts" 
+                className={`text-[10px] font-semibold px-8 py-3 rounded-xl tracking-widest transition-all shadow-md font-special active:scale-95 border ${
+                  scrolled 
+                    ? 'bg-fraido-blue text-white hover:bg-blue-600 border-transparent' 
+                    : 'bg-white/10 text-white hover:bg-white/20 border-white/30 backdrop-blur-md'
+                }`}
+              >
+                GET IN TOUCH
+              </a>
+            </div>
+
+            {/* Mobile Menu Toggle */}
+            <button 
+              className="md:hidden p-2" 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              style={{ color: scrolled ? '#4A90E2' : 'white' }}
+            >
+              {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Nav Menu */}
+        <div className={`md:hidden absolute top-full left-4 right-4 mt-4 glass rounded-[2.5rem] shadow-3xl border border-white/40 overflow-hidden transition-all duration-500 ${isMenuOpen ? 'max-h-[400px] opacity-100 py-8' : 'max-h-0 opacity-0 py-0'}`}>
+          <div className="flex flex-col items-center gap-6">
+            {navLinks.map((item) => (
+              <a 
+                key={item.name} 
+                href={item.href} 
+                onClick={() => setIsMenuOpen(false)}
+                className="text-[12px] font-semibold tracking-[0.2em] font-special uppercase text-gray-500 hover:text-fraido-blue"
+              >
+                {item.name}
+              </a>
+            ))}
+            <a 
+              href="#contacts" 
+              onClick={() => setIsMenuOpen(false)}
+              className="bg-fraido-blue text-white text-[10px] font-semibold px-10 py-4 rounded-2xl tracking-widest font-special shadow-lg"
+            >
+              GET IN TOUCH
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section - Upgraded with Dot Grid and Floating effects */}
+      <header className="relative min-h-screen flex items-center justify-center overflow-hidden hero-gradient">
+        {/* Animated Dot Grid Overlay */}
+        <div className="absolute inset-0 dot-pattern dot-pattern-animated opacity-30"></div>
         
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="flex flex-col items-center text-center">
-            <div className="mb-10">
-               <span className="px-6 py-2.5 rounded-full glass text-white text-[9px] font-medium tracking-[0.2em] border border-white/20 font-special">
+        {/* Glow Effects */}
+        <div className="absolute top-[20%] right-[10%] w-[30rem] h-[30rem] bg-blue-300/20 rounded-full blur-[120px] pointer-events-none"></div>
+        <div className="absolute bottom-[20%] left-[10%] w-[25rem] h-[25rem] bg-white/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="flex flex-col items-center text-center animate-float">
+            <div className="mb-10 opacity-0 animate-[fadeIn_0.8s_ease-out_forwards]">
+               <span className="px-8 py-3 rounded-full bg-white/10 backdrop-blur-xl text-white text-[10px] font-semibold tracking-[0.3em] border border-white/20 font-special uppercase shadow-2xl">
                 Faster access. Fewer tools.
                </span>
             </div>
             
-            <h1 className="text-5xl md:text-[9rem] font-semibold text-white tracking-tighter leading-none mb-8 drop-shadow-xl">
-              Fraido
-            </h1>
+            <div className="relative mb-12 opacity-0 animate-[fadeIn_1s_ease-out_0.3s_forwards]">
+               <h1 className="text-8xl md:text-[14rem] font-bold text-white tracking-tighter leading-none drop-shadow-[0_20px_50px_rgba(0,0,0,0.3)] select-none">
+                Fraido
+               </h1>
+               {/* Decorative border box similar to image */}
+               <div className="absolute -inset-x-8 -inset-y-4 border-2 border-white/20 rounded-[2rem] pointer-events-none hidden md:block"></div>
+            </div>
             
-            <div className="max-w-2xl text-white/90">
-              <p className="text-lg md:text-xl font-light mb-10 tracking-[0.1em] opacity-80 font-special">
-                Minimal diameter.
+            <div className="max-w-4xl text-white opacity-0 animate-[fadeIn_1s_ease-out_0.6s_forwards]">
+              <p className="text-xl md:text-2xl font-bold mb-16 tracking-[0.1em] font-special uppercase opacity-90">
+                Life in control. Minimal diameter.
               </p>
-              <div className="flex flex-wrap justify-center gap-5">
-                <a href="#idea" className="px-10 py-4 bg-white text-fraido-blue rounded-full font-medium shadow-xl hover:shadow-2xl hover:scale-105 transition-all flex items-center gap-2 font-special text-[10px] tracking-widest">
-                  Our Idea <ArrowRight size={14} />
+              <div className="flex flex-col sm:flex-row justify-center gap-8">
+                <a href="#idea" className="px-16 py-6 bg-white text-fraido-blue rounded-2xl font-bold shadow-[0_20px_40px_rgba(255,255,255,0.2)] hover:shadow-white/30 hover:scale-105 transition-all flex items-center justify-center gap-3 font-special text-[12px] tracking-widest group">
+                  EXPLORE OUR IDEA <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </a>
-                <a href="#resources" className="px-10 py-4 glass text-white rounded-full font-medium hover:bg-white/10 transition-all border border-white/30 font-special text-[10px] tracking-widest">
-                  Resources
+                <a href="#resources" className="px-16 py-6 bg-white/10 backdrop-blur-md text-white rounded-2xl font-bold hover:bg-white/20 transition-all border border-white/30 font-special text-[12px] tracking-widest flex items-center justify-center">
+                  RESOURCES
                 </a>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="absolute -bottom-1 left-0 right-0 h-32 bg-white clip-path-slant"></div>
+        {/* Slant Transition to Content */}
+        <div className="absolute -bottom-1 left-0 right-0 h-40 bg-[#fcfcfd] clip-path-slant"></div>
       </header>
 
-      {/* Sticky Nav - Improved Spacing as per screenshot */}
-      <nav className="sticky top-6 z-50 px-4">
-        <div className="max-w-6xl mx-auto glass rounded-2xl px-8 py-3.5 shadow-xl border border-white/40 flex justify-between items-center">
-          <a href="#" className="font-semibold text-fraido-blue tracking-tighter text-2xl font-special">F.</a>
-          <div className="hidden md:flex gap-10 items-center justify-center flex-1">
-            {['Idea', 'Team', 'Advisors', 'Resources', 'Contacts'].map((item) => (
-              <a key={item} href={`#${item.toLowerCase()}`} className="text-[10px] font-medium text-gray-500 hover:text-fraido-blue transition-colors tracking-widest font-special px-2">
-                {item}
-              </a>
-            ))}
-          </div>
-          <a href="#contacts" className="bg-fraido-blue text-white text-[10px] font-semibold px-6 py-2.5 rounded-xl tracking-widest hover:bg-blue-600 transition-all shadow-md font-special">
-            Contact
-          </a>
-        </div>
-      </nav>
-
-      <main className="mt-20">
-        
-        {/* IDEA SECTION - Added scroll-mt-24 for anchor links */}
-        <section id="idea" className="py-24 scroll-mt-24">
-          <div className="max-w-6xl mx-auto px-4">
+      <main>
+        {/* IDEA SECTION */}
+        <section id="idea" className="py-32 scroll-mt-24">
+          <div className="max-w-7xl mx-auto px-6">
             <SectionHeader 
-              title="Our Idea" 
-              subtitle="Innovation in endotracheal intubation"
-              icon={<Lightbulb size={16} />} 
+              title="The Innovation" 
+              subtitle="Revolutionizing endotracheal intubation"
+              icon={<Lightbulb size={18} />} 
             />
             
-            <div className="grid lg:grid-cols-2 gap-24 items-center">
-              <div className="relative order-2 lg:order-1">
-                <div className="absolute -top-12 -left-12 w-48 h-48 bg-blue-50 rounded-full blur-3xl opacity-70"></div>
-                <div className="relative rounded-[3rem] overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.15)] bg-white group p-4 border border-gray-100">
-                  <img 
-                    src={`${RAW_URL}/Fraidogif.gif`} 
-                    alt="Fraido Device Action" 
-                    className="w-full h-full object-contain rounded-2xl"
-                  />
+            <div className="grid lg:grid-cols-2 gap-20 items-center">
+              <div className="relative order-2 lg:order-1 group">
+                <div className="absolute -inset-4 bg-blue-100/50 rounded-[4rem] blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                <div className="relative rounded-[4rem] overflow-hidden shadow-2xl bg-white p-6 border border-gray-100 hover-lift">
+                  <div className="aspect-[4/3] rounded-[3rem] overflow-hidden bg-gray-50 flex items-center justify-center">
+                    <img 
+                      src={`${RAW_URL}/Fraidogif.gif`} 
+                      alt="Fraido Device Action" 
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                </div>
+                <div className="absolute -bottom-10 -right-6 glass p-8 rounded-3xl shadow-xl border border-blue-100 hidden md:block hover-lift">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-blue-50 rounded-xl text-fraido-blue">
+                      <Activity size={24} />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-special tracking-widest text-gray-400 uppercase">Success Rate</p>
+                      <p className="text-xl font-bold text-gray-900">Improved Outcomes</p>
+                    </div>
+                  </div>
                 </div>
               </div>
               
-              <div className="space-y-8 order-1 lg:order-2">
-                <div className="space-y-6 text-gray-500 text-lg leading-relaxed font-light">
+              <div className="space-y-10 order-1 lg:order-2">
+                <div className="space-y-8 text-gray-500 text-xl leading-relaxed font-light">
                   <p>
-                    During endotracheal intubation, <span className="text-gray-900 font-normal">every second matters</span>. The number of attempts and time-to-intubation are key markers for identifying a successful procedure.
+                    During endotracheal intubation, <span className="text-gray-900 font-medium">every single second matters</span>. The number of attempts and total time-to-intubation are critical markers for identifying a successful medical procedure.
+                  </p>
+                  <p className="border-l-4 border-fraido-blue/30 pl-8">
+                    Fraido has patented a technology enabling the <span className="text-fraido-blue font-semibold">continuous regulation of a tube's diameter</span>. This breakthrough allows an endotracheal tube to act as its own introducer and expand once in place.
                   </p>
                   <p>
-                    Our company has filed a patent for a technology enabling the <span className="text-fraido-blue font-normal">continuous regulation of a tube's diameter</span>. This allows an endotracheal tube to act as the introducer and expand once in place, reducing time-to-intubation, attempts, and trauma.
-                  </p>
-                  <p>
-                    Diameter control also enables safe-extubation and intraoperative adjustments.
+                    This dynamic control significantly reduces intubation time, minimizes attempts, and prevents tissue trauma. It also enables safe-extubation and precise intraoperative adjustments.
                   </p>
                 </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* TEAM SECTION - Added scroll-mt-24 */}
-        <section id="team" className="py-24 bg-gray-50/40 scroll-mt-24">
-          <div className="max-w-6xl mx-auto px-4">
-            <SectionHeader 
-              title="Our Team" 
-              subtitle="The people behind Fraido"
-              icon={<Users size={16} />} 
-            />
-            
-            <div className="grid md:grid-cols-2 gap-10">
-              <div className="group relative bg-white rounded-[2.5rem] p-10 border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500">
-                <div className="flex flex-col items-center text-center">
-                  <img src={`${RAW_URL}/AntonioVizioli.jpg`} className="w-40 h-40 rounded-full object-cover shadow-lg mb-8 border-4 border-white grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" alt="Antonio Maria Vizioli" />
-                  <h3 className="text-2xl font-semibold text-gray-900 mb-1 tracking-tight">Antonio Maria Vizioli</h3>
-                  <p className="text-fraido-blue font-semibold text-[10px] tracking-[0.2em] mb-5 font-special">CEO</p>
-                  <p className="text-sm text-gray-500 leading-relaxed font-light mb-8 min-h-[6rem]">
-                    Worked as a Nurse in England and throughout Italy. 5 years of experience in Emergency Departments. He could strike up a conversation with a door knob, and he will definitely end up pitching to it.
-                  </p>
-                  <a href="https://www.linkedin.com/in/antonio-maria-vizioli-75728219b/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-fraido-blue transition-colors">
-                    <Linkedin size={24} />
-                  </a>
-                </div>
-              </div>
-              
-              <div className="group relative bg-white rounded-[2.5rem] p-10 border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500">
-                <div className="flex flex-col items-center text-center">
-                  <img src={`${RAW_URL}/EliaFregonese.jpeg`} className="w-40 h-40 rounded-full object-cover shadow-lg mb-8 border-4 border-white grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" alt="Elia Fregonese" />
-                  <h3 className="text-2xl font-semibold text-gray-900 tracking-tight mb-1">Elia Fregonese</h3>
-                  <p className="text-fraido-blue font-semibold text-[10px] tracking-[0.2em] mb-5 font-special">CTO</p>
-                  <p className="text-sm text-gray-500 leading-relaxed font-light mb-8 min-h-[6rem]">
-                    Master Degree in Materials Engineering and Nanotechnology from Politecnico di Milan. 4 years of experience as Thermo-Mechanical System Engineer. Painstakingly attached to details and precision.
-                  </p>
-                  <a href="https://www.linkedin.com/in/fregonesee/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-fraido-blue transition-colors">
-                    <Linkedin size={24} />
+                <div className="pt-6">
+                  <a href="#resources" className="inline-flex items-center gap-4 text-fraido-blue font-special text-[11px] tracking-[0.2em] uppercase font-bold group">
+                    Discover clinical details <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
                   </a>
                 </div>
               </div>
@@ -203,78 +279,136 @@ const App: React.FC = () => {
           </div>
         </section>
 
-        {/* ADVISORS - Added scroll-mt-24 */}
-        <section id="advisors" className="py-24 scroll-mt-24">
-          <div className="max-w-6xl mx-auto px-4">
+        {/* TEAM SECTION */}
+        <section id="team" className="py-32 bg-[#f8fbff] scroll-mt-24">
+          <div className="max-w-7xl mx-auto px-6">
             <SectionHeader 
-              title="Our Advisors" 
-              subtitle="Medical Expertise"
-              icon={<Users size={16} />} 
+              title="Core Team" 
+              subtitle="The minds driving innovation"
+              icon={<Users size={18} />} 
             />
             
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid md:grid-cols-2 gap-12">
               {[
-                { name: "Giacomo Bellani", desc: "Anesthetist - Head of ICU - Trento Hospital", img: `${RAW_URL}/GiacomoBellani.jpg` },
-                { name: "Marco Garroni", desc: "Anesthetists - Airway Management Instructor", img: `${RAW_URL}/MarcoGarroni.png` },
-                { name: "Roberto Righetti", desc: "Anesthetists - Airway Management Instructor", img: `${RAW_URL}/RobertoRighetti.png` },
-                { name: "Stefano Bonvini", desc: "Vascular Surgeon - Head of Surgery - Trento Hospital", img: `${RAW_URL}/StefanoBonvini.jpg` }
-              ].map((adv, i) => (
-                <div key={i} className="group p-8 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all flex flex-col items-center text-center">
-                  <img src={adv.img} className="w-20 h-20 rounded-full object-cover mb-6 grayscale group-hover:grayscale-0 transition-all duration-500 border-2 border-transparent group-hover:border-fraido-blue/20" alt={adv.name} />
-                  <h4 className="font-semibold text-gray-900 mb-3 tracking-tight">{adv.name}</h4>
-                  <p className="text-[9px] text-gray-400 font-medium tracking-widest leading-relaxed opacity-70 font-special">{adv.desc}</p>
+                {
+                  name: "Antonio Maria Vizioli",
+                  role: "CEO",
+                  bio: "Experienced Nurse with 5+ years in Emergency Departments across England and Italy. A natural communicator and visionary leader focused on patient safety.",
+                  img: `${RAW_URL}/AntonioVizioli.jpg`,
+                  linkedin: "https://www.linkedin.com/in/antonio-maria-vizioli-75728219b/"
+                },
+                {
+                  name: "Elia Fregonese",
+                  role: "CTO",
+                  bio: "Master's in Materials Engineering and Nanotechnology from Politecnico di Milano. 4 years as a Thermo-Mechanical System Engineer with an obsession for precision.",
+                  img: `${RAW_URL}/EliaFregonese.jpeg`,
+                  linkedin: "https://www.linkedin.com/in/fregonesee/"
+                }
+              ].map((member, i) => (
+                <div key={i} className="group relative bg-white rounded-[3.5rem] p-12 border border-blue-50 shadow-sm hover:shadow-2xl transition-all duration-700 hover-lift overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-fraido-light rounded-bl-[4rem] transition-all duration-700 group-hover:w-full group-hover:h-full group-hover:rounded-none opacity-20"></div>
+                  <div className="relative z-10 flex flex-col items-center text-center">
+                    <div className="relative mb-10">
+                      <div className="absolute inset-0 bg-fraido-blue rounded-full scale-0 group-hover:scale-110 transition-transform duration-700 opacity-20"></div>
+                      <img src={member.img} className="w-48 h-48 rounded-full object-cover shadow-2xl border-4 border-white grayscale group-hover:grayscale-0 transition-all duration-700" alt={member.name} />
+                    </div>
+                    <h3 className="text-3xl font-bold text-gray-900 mb-2 tracking-tight">{member.name}</h3>
+                    <p className="text-fraido-blue font-bold text-[11px] tracking-[0.3em] mb-8 font-special uppercase">{member.role}</p>
+                    <p className="text-gray-500 leading-relaxed font-light mb-10 max-w-sm">
+                      {member.bio}
+                    </p>
+                    <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-fraido-blue hover:text-white transition-all duration-500 shadow-sm">
+                      <Linkedin size={24} />
+                    </a>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* RESOURCES - Added scroll-mt-24 */}
-        <section id="resources" className="py-24 bg-gray-900 text-white rounded-[3rem] md:rounded-[5rem] mx-4 mb-24 overflow-hidden shadow-2xl scroll-mt-24">
-          <div className="max-w-6xl mx-auto px-8">
+        {/* ADVISORS */}
+        <section id="advisors" className="py-32 scroll-mt-24">
+          <div className="max-w-7xl mx-auto px-6">
             <SectionHeader 
-              title="Resources" 
-              subtitle="Our Deck & Pitch Videos"
-              icon={<FileText size={16} className="text-white/40" />} 
+              title="Medical Advisors" 
+              subtitle="Expertise in the field"
+              icon={<Stethoscope size={18} />} 
+            />
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+              {[
+                { name: "Giacomo Bellani", desc: "Anesthetist - Head of ICU - Trento Hospital", img: `${RAW_URL}/GiacomoBellani.jpg` },
+                { name: "Marco Garroni", desc: "Anesthetists - Airway Management Instructor", img: `${RAW_URL}/MarcoGarroni.png` },
+                { name: "Roberto Righetti", desc: "Anesthetists - Airway Management Instructor", img: `${RAW_URL}/RobertoRighetti.png` },
+                { name: "Stefano Bonvini", desc: "Vascular Surgeon - Head of Surgery - Trento Hospital", img: `${RAW_URL}/StefanoBonvini.jpg` }
+              ].map((adv, i) => (
+                <div key={i} className="group p-10 bg-white rounded-[3rem] border border-gray-50 shadow-sm hover:shadow-xl transition-all duration-500 text-center flex flex-col items-center hover-lift">
+                  <div className="relative mb-8">
+                    <img src={adv.img} className="w-24 h-24 rounded-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 shadow-lg border-2 border-transparent group-hover:border-fraido-blue/30" alt={adv.name} />
+                  </div>
+                  <h4 className="font-bold text-gray-900 mb-4 tracking-tight text-lg">{adv.name}</h4>
+                  <p className="text-[10px] text-gray-400 font-semibold tracking-widest leading-relaxed uppercase font-special px-4">{adv.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* RESOURCES */}
+        <section id="resources" className="py-32 bg-slate-900 text-white rounded-[4rem] md:rounded-[6rem] mx-4 mb-32 overflow-hidden shadow-3xl scroll-mt-24 relative">
+          <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-fraido-blue/10 blur-[150px]"></div>
+          <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-blue-500/10 blur-[120px]"></div>
+          
+          <div className="max-w-7xl mx-auto px-8 relative z-10">
+            <SectionHeader 
+              title="Knowledge Center" 
+              subtitle="Our Deck & Presentations"
+              icon={<FileText size={18} className="text-white/60" />} 
+              dark
             />
 
-            <div className="grid lg:grid-cols-2 gap-12">
-              <div className="space-y-8">
-                <div className="flex justify-between items-center px-4">
-                  <h3 className="text-2xl font-medium tracking-tight">Interactive Deck</h3>
-                  <a href="https://fraido.it/assets/deck/Fraido_Deck.pdf" target="_blank" rel="noopener noreferrer" className="text-[9px] font-bold text-fraido-blue uppercase tracking-widest border border-fraido-blue/30 px-4 py-1.5 rounded-full hover:bg-fraido-blue/10 transition-colors font-special">
+            <div className="grid lg:grid-cols-12 gap-16">
+              <div className="lg:col-span-7 space-y-10">
+                <div className="flex justify-between items-end mb-4">
+                  <div>
+                    <h3 className="text-3xl font-semibold tracking-tight mb-2">Interactive Deck</h3>
+                    <p className="text-white/40 text-sm">Deep dive into our technology and business model.</p>
+                  </div>
+                  <a href="https://fraido.it/assets/deck/Fraido_Deck.pdf" target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold text-fraido-blue uppercase tracking-widest border border-fraido-blue/30 px-6 py-2.5 rounded-full hover:bg-fraido-blue hover:text-white transition-all font-special bg-white/5 shadow-lg">
                     Download PDF
                   </a>
                 </div>
-                <div className="aspect-[16/9] rounded-[2.5rem] overflow-hidden border border-white/10 shadow-3xl bg-black/40">
+                <div className="aspect-[16/10] rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl bg-black/40 group">
                   <iframe 
-                    src="https://heyzine.com/flip-book/b21697f353.html" 
-                    className="w-full h-full" 
+                    src="https://heyzine.com/flip-book/25f23293b0.html" 
+                    className="w-full h-full opacity-90 group-hover:opacity-100 transition-opacity" 
                     allowFullScreen
                     title="Fraido Pitch Deck"
                   ></iframe>
                 </div>
-                <p className="text-[10px] text-white/40 text-center tracking-widest font-medium font-special">Browse our latest clinical and business case</p>
               </div>
 
-              <div className="space-y-8">
-                <div className="flex justify-between items-center px-4">
-                  <h3 className="text-2xl font-medium tracking-tight">Pitch & Presentations</h3>
-                  <span className="text-[10px] font-bold text-white/20 tracking-widest font-special">Video Archive</span>
+              <div className="lg:col-span-5 space-y-10">
+                <div className="flex justify-between items-end mb-4">
+                  <div>
+                    <h3 className="text-3xl font-semibold tracking-tight mb-2">Pitch Videos</h3>
+                    <p className="text-white/40 text-sm">Watch our live demonstrations.</p>
+                  </div>
                 </div>
                 
-                <div className="grid gap-6">
+                <div className="flex flex-col gap-8">
                   <VideoCard 
-                    title="Fraido Pitch 1" 
-                    subtitle="Startupbreeze 2024" 
+                    title="Startupbreeze 2024" 
+                    subtitle="Live Pitch" 
                     videoId="yqHHQR6pb0s" 
-                    date="June 2024"
+                    date="JUNE 2024"
                   />
                   <VideoCard 
-                    title="Fraido Pitch 2" 
-                    subtitle="Presentation" 
+                    title="Full Concept Presentation" 
+                    subtitle="Technical Deep-Dive" 
                     videoId="54Hm9SUGVtM" 
-                    date="Current"
+                    date="CURRENT"
                   />
                 </div>
               </div>
@@ -282,34 +416,38 @@ const App: React.FC = () => {
           </div>
         </section>
 
-        {/* CONTACTS - Added scroll-mt-24 */}
-        <section id="contacts" className="py-24 scroll-mt-24">
-          <div className="max-w-6xl mx-auto px-4">
-             <div className="bg-fraido-light rounded-[4rem] p-16 md:p-24 relative overflow-hidden border border-blue-100/50">
-                <div className="absolute -top-20 -right-20 opacity-[0.03] pointer-events-none">
-                  <Globe size={500} className="text-fraido-blue" />
+        {/* CONTACT SECTION */}
+        <section id="contacts" className="py-32 scroll-mt-24">
+          <div className="max-w-7xl mx-auto px-6">
+             <div className="bg-fraido-light rounded-[5rem] p-16 md:p-28 relative overflow-hidden border border-blue-100/50 shadow-inner">
+                <div className="absolute -top-32 -right-32 opacity-10 pointer-events-none rotate-12">
+                  <Globe size={600} className="text-fraido-blue" />
                 </div>
                 
-                <div className="relative z-10 text-center md:text-left">
-                  <h2 className="text-5xl md:text-7xl font-medium text-gray-900 mb-16 tracking-tighter">Get in touch.</h2>
+                <div className="relative z-10">
+                  <div className="mb-20 text-center md:text-left">
+                    <span className="text-[11px] font-special font-bold text-fraido-blue tracking-[0.4em] uppercase mb-4 block">Let's connect</span>
+                    <h2 className="text-6xl md:text-8xl font-bold text-gray-900 tracking-tighter">Get in touch.</h2>
+                  </div>
                   
-                  <div className="grid md:grid-cols-2 gap-8">
-                    <a href="mailto:info@fraido.it" className="flex items-center gap-8 p-10 bg-white rounded-[2.5rem] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group border border-gray-100/50">
-                      <div className="w-16 h-16 rounded-2xl bg-fraido-light flex items-center justify-center text-fraido-blue group-hover:bg-fraido-blue group-hover:text-white transition-all duration-300">
-                        <Mail size={30} />
+                  <div className="grid md:grid-cols-2 gap-10">
+                    <a href="mailto:info@fraido.it" className="flex items-center gap-10 p-12 bg-white rounded-[3.5rem] shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all group border border-blue-50/50">
+                      <div className="w-20 h-20 rounded-3xl bg-fraido-light flex items-center justify-center text-fraido-blue group-hover:bg-fraido-blue group-hover:text-white transition-all duration-500 shadow-sm group-hover:rotate-6">
+                        <Mail size={36} />
                       </div>
                       <div>
-                        <p className="text-[10px] font-semibold text-gray-400 tracking-widest mb-1.5 font-special">Email</p>
-                        <p className="text-xl font-medium text-gray-900 tracking-tight">info@fraido.it</p>
+                        <p className="text-[10px] font-bold text-gray-400 tracking-[0.3em] mb-2 font-special uppercase">Email Address</p>
+                        <p className="text-2xl font-semibold text-gray-900 tracking-tight">info@fraido.it</p>
                       </div>
                     </a>
-                    <a href="tel:+393469731543" className="flex items-center gap-8 p-10 bg-white rounded-[2.5rem] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group border border-gray-100/50">
-                      <div className="w-16 h-16 rounded-2xl bg-fraido-light flex items-center justify-center text-fraido-blue group-hover:bg-fraido-blue group-hover:text-white transition-all duration-300">
-                        <Phone size={30} />
+                    
+                    <a href="tel:+393469731543" className="flex items-center gap-10 p-12 bg-white rounded-[3.5rem] shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all group border border-blue-50/50">
+                      <div className="w-20 h-20 rounded-3xl bg-fraido-light flex items-center justify-center text-fraido-blue group-hover:bg-fraido-blue group-hover:text-white transition-all duration-500 shadow-sm group-hover:-rotate-6">
+                        <Phone size={36} />
                       </div>
                       <div>
-                        <p className="text-[10px] font-semibold text-gray-400 tracking-widest mb-1.5 font-special">Phone</p>
-                        <p className="text-xl font-medium text-gray-900 tracking-tight">+39 346 973 1543</p>
+                        <p className="text-[10px] font-bold text-gray-400 tracking-[0.3em] mb-2 font-special uppercase">Phone Contact</p>
+                        <p className="text-2xl font-semibold text-gray-900 tracking-tight">+39 346 973 1543</p>
                       </div>
                     </a>
                   </div>
@@ -317,33 +455,53 @@ const App: React.FC = () => {
              </div>
           </div>
         </section>
-
       </main>
 
-      <footer className="py-20 bg-white border-t border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-10">
-          <div className="flex items-center gap-5">
-            <span className="text-3xl font-semibold text-fraido-blue tracking-tighter font-special">Fraido</span>
-            <div className="w-[1px] h-10 bg-gray-100"></div>
-            <p className="text-[10px] font-medium text-gray-400 tracking-[0.3em] font-special">Life in control</p>
-          </div>
-          
-          <div className="flex gap-10 text-[10px] font-medium text-gray-300 tracking-widest font-special">
-            <a href="#" className="hover:text-fraido-blue transition-colors">Privacy</a>
-            <a href="#" className="hover:text-fraido-blue transition-colors">Legal</a>
-            <a href="#" className="hover:text-gray-900 transition-colors">© 2025 Fraido S.r.l.</a>
+      <footer className="py-24 bg-white border-t border-gray-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-16">
+            <div className="flex flex-col items-center md:items-start gap-6">
+              <div className="flex items-center gap-5">
+                <span className="text-4xl font-bold text-fraido-blue tracking-tighter font-special">Fraido</span>
+                <div className="w-[1px] h-10 bg-gray-200"></div>
+                <p className="text-[11px] font-bold text-gray-400 tracking-[0.4em] font-special uppercase">Life in control</p>
+              </div>
+            </div>
+            <div className="flex flex-col items-center md:items-end gap-10">
+              <div className="flex gap-12 text-[11px] font-bold text-gray-400 tracking-[0.2em] font-special uppercase">
+                <a href="#" className="hover:text-fraido-blue transition-colors">Privacy</a>
+                <a href="#" className="hover:text-fraido-blue transition-colors">Legal</a>
+                <a href="https://www.linkedin.com/company/fraido/" target="_blank" className="hover:text-fraido-blue transition-colors">LinkedIn</a>
+              </div>
+              <p className="text-[10px] font-semibold text-gray-300 tracking-widest font-special">© 2025 FRAIDO S.R.L. • ALL RIGHTS RESERVED</p>
+            </div>
           </div>
         </div>
       </footer>
 
-      {/* Cookie Consent */}
-      <div className="fixed bottom-10 right-10 z-[100] group">
-        <div className="relative glass p-8 rounded-[3rem] shadow-3xl border border-white/60 w-80 translate-y-6 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-700 pointer-events-none group-hover:pointer-events-auto">
-          <p className="text-[12px] leading-relaxed text-gray-600 mb-6 font-light italic">Enhancing your digital medical experience through optimized cookies.</p>
-          <button className="w-full py-3.5 bg-fraido-blue text-white text-[10px] font-bold rounded-2xl hover:bg-blue-600 transition-all shadow-lg font-special">Accept All</button>
-        </div>
-        <div className="absolute bottom-0 right-0 w-16 h-16 bg-fraido-blue rounded-full shadow-2xl flex items-center justify-center text-white cursor-pointer hover:scale-110 transition-transform">
-          <ShieldCheck size={28} />
+      {/* FAB and Cookie Control */}
+      <div className="fixed bottom-8 right-8 z-[100] group">
+        {showCookie && (
+          <div className="relative glass p-8 rounded-[2.5rem] shadow-3xl border border-white/60 w-80 translate-y-6 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none group-hover:pointer-events-auto mb-4">
+            <h4 className="text-sm font-bold text-gray-900 mb-4 font-special tracking-widest uppercase">Privacy First</h4>
+            <p className="text-[12px] leading-relaxed text-gray-500 mb-8 font-light italic">
+              We use cookies to enhance your medical technology discovery experience.
+            </p>
+            <button 
+              onClick={() => setShowCookie(false)}
+              className="w-full py-4 bg-fraido-blue text-white text-[10px] font-bold rounded-2xl hover:bg-blue-600 transition-all shadow-xl font-special tracking-widest active:scale-95"
+            >
+              ACCEPT ALL
+            </button>
+          </div>
+        )}
+        <div className="flex justify-end">
+          <div 
+            onClick={() => setShowCookie(!showCookie)}
+            className="w-16 h-16 bg-fraido-blue rounded-full shadow-2xl flex items-center justify-center text-white cursor-pointer hover:scale-110 transition-transform shadow-fraido-blue/40 border-4 border-white active:scale-90"
+          >
+            <ShieldCheck size={26} />
+          </div>
         </div>
       </div>
     </div>
