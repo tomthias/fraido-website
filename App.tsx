@@ -14,45 +14,11 @@ import {
   Menu, 
   X, 
   ChevronRight, 
-  Stethoscope 
+  Stethoscope, 
+  Activity 
 } from 'lucide-react';
 
 const RAW_URL = "https://raw.githubusercontent.com/tomthias/fraido-website/assets/website-assets";
-
-// Particle component for background effect
-const ParticlesBackground: React.FC = () => {
-  const [particles, setParticles] = useState<any[]>([]);
-
-  useEffect(() => {
-    const p = Array.from({ length: 15 }).map((_, i) => ({
-      id: i,
-      left: `${Math.random() * 100}%`,
-      size: `${Math.random() * 4 + 2}px`,
-      duration: `${Math.random() * 15 + 10}s`,
-      delay: `${Math.random() * 10}s`,
-    }));
-    setParticles(p);
-  }, []);
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {particles.map((p) => (
-        <div
-          key={p.id}
-          className="particle"
-          style={{
-            left: p.left,
-            width: p.size,
-            height: p.size,
-            animationDuration: p.duration,
-            animationDelay: p.delay,
-            opacity: 0,
-          }}
-        />
-      ))}
-    </div>
-  );
-};
 
 // Componente per l'illustrazione interattiva del tubo a diametro variabile
 const FraidoDynamicTube: React.FC<{ dark?: boolean }> = ({ dark }) => {
@@ -69,6 +35,8 @@ const FraidoDynamicTube: React.FC<{ dark?: boolean }> = ({ dark }) => {
     const relativeX = x - rect.left;
     const svgWidth = rect.width;
     
+    // Lo slider è posizionato tra x=10 e x=110 nel viewBox 800
+    // Calcoliamo la posizione relativa all'area dello slider
     const sliderStartX = (10 / 800) * svgWidth;
     const sliderWidth = (100 / 800) * svgWidth;
     let newValue = (relativeX - sliderStartX) / sliderWidth;
@@ -76,6 +44,7 @@ const FraidoDynamicTube: React.FC<{ dark?: boolean }> = ({ dark }) => {
     setRegulation(newValue);
   };
 
+  // Interpolazione dei path basata sulla regolazione
   const getDynamicPath = (val: number) => {
     const y1 = 55 - (val * 10);
     const y2 = 58 - (val * 23);
@@ -87,7 +56,7 @@ const FraidoDynamicTube: React.FC<{ dark?: boolean }> = ({ dark }) => {
   };
 
   return (
-    <div className="relative w-full max-w-[850px] h-[160px] md:h-[200px] flex flex-col items-center justify-center mt-16 mx-auto group z-20">
+    <div className="relative w-full max-w-[850px] h-[160px] md:h-[200px] flex flex-col items-center justify-center mt-16 mx-auto group">
       <svg 
         viewBox="0 0 800 120" 
         className="w-full h-full drop-shadow-2xl overflow-visible cursor-default select-none"
@@ -114,8 +83,12 @@ const FraidoDynamicTube: React.FC<{ dark?: boolean }> = ({ dark }) => {
           </filter>
         </defs>
         
+        {/* --- MANUAL CONTROL INTERFACE --- */}
         <g transform="translate(10, 35)" className="cursor-pointer pointer-events-auto">
+           {/* Control Track */}
            <rect x="0" y="20" width="100" height="10" rx="5" fill="rgba(255,255,255,0.05)" stroke={tubeColor} strokeWidth="1" strokeOpacity="0.2" />
+           
+           {/* Manual Slider / Handle */}
            <g transform={`translate(${regulation * 88}, 0)`}>
              <rect 
                 x="0" y="5" width="12" height="40" rx="4" 
@@ -126,13 +99,18 @@ const FraidoDynamicTube: React.FC<{ dark?: boolean }> = ({ dark }) => {
              <rect x="4" y="15" width="1" height="20" fill={dark ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.4)"} />
              <rect x="7" y="15" width="1" height="20" fill={dark ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.4)"} />
            </g>
+           
            <text x="50" y="0" textAnchor="middle" fill={tubeColor} fontSize="8" fontWeight="bold" letterSpacing="1.5" opacity="0.8" className="font-special uppercase">
               Manual Regulation: {Math.round(regulation * 100)}%
            </text>
         </g>
 
+        {/* --- THE LONG VARIABLE TUBE --- */}
         <g transform="translate(140, 0)">
+          {/* External Tissue Reference */}
           <path d="M 0,40 Q 325,30 650,40 L 650,80 Q 325,90 0,80 Z" fill="none" stroke={dark ? "rgba(255,255,255,0.08)" : "rgba(74,144,226,0.05)"} strokeWidth="1" strokeDasharray="4,4" />
+          
+          {/* The Dynamic Tube Body */}
           <path 
             d={getDynamicPath(regulation)}
             fill={`url(#tubeGradient-${dark ? 'dark' : 'light'})`} 
@@ -141,6 +119,8 @@ const FraidoDynamicTube: React.FC<{ dark?: boolean }> = ({ dark }) => {
             filter="url(#glow-tube-interactive)"
             className="transition-all duration-150 ease-out"
           />
+          
+          {/* Internal Flow Particles */}
           {[1, 2, 3, 4, 5, 6, 7].map((i) => (
             <circle key={i} r="1.5" fill={tubeColor}>
               <animate attributeName="cx" from="20" to="620" dur={`${1 + i * 0.3}s`} repeatCount="indefinite" />
@@ -220,13 +200,9 @@ const App: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [showCookie, setShowCookie] = useState(true);
-  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-      setScrollY(window.scrollY);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -328,32 +304,18 @@ const App: React.FC = () => {
 
       <header className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
         <div className="absolute inset-0 animate-gradient"></div>
-        <ParticlesBackground />
-        
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-        
-        {/* Parallax elements */}
-        <div 
-          className="absolute top-[20%] left-[15%] w-[30rem] h-[30rem] bg-white/20 rounded-full blur-[100px] pointer-events-none transition-transform duration-300"
-          style={{ transform: `translateY(${scrollY * 0.2}px)` }}
-        ></div>
-        <div 
-          className="absolute bottom-[10%] right-[10%] w-[25rem] h-[25rem] bg-blue-400/20 rounded-full blur-[80px] pointer-events-none transition-transform duration-300"
-          style={{ transform: `translateY(${scrollY * -0.1}px)` }}
-        ></div>
+        <div className="absolute top-[35%] left-[25%] w-[40rem] h-[40rem] bg-white/10 rounded-full blur-[120px] pointer-events-none"></div>
 
         <div className="container mx-auto px-6 relative z-10">
-          <div 
-            className="flex flex-col items-start md:items-center text-left md:text-center transition-all duration-500"
-            style={{ transform: `translateY(${scrollY * 0.1}px)`, opacity: 1 - scrollY / 700 }}
-          >
-            <div className="mb-6 animate-float">
-               <span className="px-8 py-3 rounded-full glass text-fraido-blue text-[10px] font-semibold tracking-[0.3em] border border-white/20 font-special uppercase backdrop-blur-xl shadow-lg">
+          <div className="flex flex-col items-start md:items-center text-left md:text-center">
+            <div className="mb-6">
+               <span className="px-8 py-3 rounded-full glass text-fraido-blue text-[10px] font-semibold tracking-[0.3em] border border-white/20 font-special uppercase backdrop-blur-xl">
                 Faster access. Fewer tools.
                </span>
             </div>
             
-            <h1 className="text-8xl md:text-[13rem] font-bold text-white tracking-tighter leading-none mb-2 drop-shadow-2xl select-none animate-float" style={{ animationDelay: '0.5s' }}>
+            <h1 className="text-8xl md:text-[13rem] font-bold text-white tracking-tighter leading-none mb-2 drop-shadow-2xl select-none">
               Fraido
             </h1>
             
@@ -366,12 +328,13 @@ const App: React.FC = () => {
                 <a 
                   href="#idea" 
                   onClick={(e) => scrollToSection(e, '#idea')}
-                  className="px-14 py-5 bg-white text-fraido-blue rounded-2xl font-bold shadow-2xl hover:bg-blue-50 hover:shadow-white/20 hover:scale-105 transition-all flex items-center justify-center gap-3 font-special text-[11px] tracking-widest group"
+                  className="px-14 py-5 bg-white text-fraido-blue rounded-2xl font-bold shadow-2xl hover:bg-white hover:text-fraido-blue hover:shadow-white/20 hover:scale-105 transition-all flex items-center justify-center gap-3 font-special text-[11px] tracking-widest group"
                 >
                   EXPLORE OUR IDEA <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </a>
               </div>
 
+              {/* ILLUSTRATION INTERATTIVA POSIZIONATA SOTTO IL BOTTONE */}
               <FraidoDynamicTube dark />
             </div>
           </div>
