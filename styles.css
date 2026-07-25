@@ -284,14 +284,25 @@ body {
 }
 .rcard h4 { font-weight: 800; font-size: 25px; margin: 0; color: var(--ink); }
 .rcard p { font-size: 16px; color: var(--muted); margin: 0; line-height: 1.6; }
-.rcard .dl {
-  margin-top: 7px;
-  font: 700 15px Montserrat, sans-serif;
-  color: var(--navy);
+.rcard .actions {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.rcard .act {
+  font: 700 14px/1 Montserrat, sans-serif;
+  padding: 13px 22px;
+  border-radius: 100px;
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
+  transition: transform 0.15s, background 0.15s, color 0.15s;
 }
+.rcard .act:hover { transform: translateY(-2px); }
+.act-view { background: var(--accent); color: #fff; }
+.act-dl { background: transparent; color: var(--navy); border: 1.5px solid var(--navy); }
+.act-dl:hover { background: var(--navy); color: #fff; }
 
 /* ---------- CONTACT ---------- */
 .contact { background: var(--navy); color: #fff; }

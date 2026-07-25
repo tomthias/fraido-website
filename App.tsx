@@ -198,18 +198,24 @@ const App: React.FC = () => {
           <span className="eyebrow">◆ Resources</span>
           <h2>Decks & presentations</h2>
           <div className="res">
-            <a className="rcard" href="assets/Short_Deck.pdf" target="_blank" rel="noreferrer">
+            <div className="rcard">
               <span className="tag">PDF · Overview</span>
               <h4>Short deck</h4>
               <p>A concise overview of Fraido, the problem and the solution.</p>
-              <span className="dl">Download PDF →</span>
-            </a>
-            <a className="rcard" href="assets/Detailed_Deck.pdf" target="_blank" rel="noreferrer">
+              <div className="actions">
+                <a className="act act-view" href="assets/Short_Deck.pdf" target="_blank" rel="noreferrer">View deck →</a>
+                <a className="act act-dl" href="assets/Short_Deck.pdf" download="Fraido_Short_Deck.pdf">Download ↓</a>
+              </div>
+            </div>
+            <div className="rcard">
               <span className="tag">PDF · Full</span>
               <h4>Detailed deck</h4>
               <p>The complete technical and business case, in depth.</p>
-              <span className="dl">Download PDF →</span>
-            </a>
+              <div className="actions">
+                <a className="act act-view" href="assets/Detailed_Deck.pdf" target="_blank" rel="noreferrer">View deck →</a>
+                <a className="act act-dl" href="assets/Detailed_Deck.pdf" download="Fraido_Detailed_Deck.pdf">Download ↓</a>
+              </div>
+            </div>
           </div>
         </div>
       </section>
