@@ -21,6 +21,15 @@ const ADVISORS = [
 
 const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState('');
+  const [scrolled, setScrolled] = useState(false);
+
+  // Glass effect on the nav once the page starts scrolling
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   // Scroll-spy: highlight the nav link of the section currently in view
   useEffect(() => {
@@ -61,7 +70,7 @@ const App: React.FC = () => {
 
   return (
     <div className="site">
-      <nav className="nav">
+      <nav className={scrolled ? 'nav scrolled' : 'nav'}>
         <img className="nav-logo" src="assets/logo-navy.png" alt="Fraido" />
         <ul>
           {NAV_LINKS.map(link => (
@@ -132,7 +141,9 @@ const App: React.FC = () => {
           <span className="eyebrow">◆ Our Idea</span>
           <h2>One step, one device,<br />for all the anatomy.</h2>
           <div className="idea-grid">
-            <div className="gif"><img src="assets/device.gif" alt="Fraido device" /></div>
+            <div className="gif">
+              <video src="assets/device.mp4" autoPlay loop muted playsInline aria-label="Fraido device" />
+            </div>
             <div>
               <h3>A single-step, single-device procedure.</h3>
               <p>
@@ -173,7 +184,7 @@ const App: React.FC = () => {
           <div className="adv">
             {ADVISORS.map(a => (
               <div className="acard" key={a.name}>
-                <img className="avatar" src={a.img} alt={a.name} />
+                <img className="avatar" src={a.img} alt={a.name} loading="lazy" decoding="async" width={80} height={80} />
                 <h5>{a.name}</h5>
                 <span>{a.desc}</span>
               </div>
