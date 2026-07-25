@@ -19,6 +19,70 @@ const ADVISORS = [
   { img: 'assets/adv-markle.jpg', name: 'Andrew Markle', desc: 'Anesthetist · Quality management, Saint Mary hospital' },
 ];
 
+// Interactive airway cross-section: dragging the slider narrows the lumen
+const AirwayInteractive: React.FC = () => {
+  const [constriction, setConstriction] = useState(0.25);
+
+  const W = 420;
+  const H = 240;
+  const midY = H / 2;
+  const openGap = 62; // half-lumen at fully open
+  const minGap = 3; // half-lumen at fully constricted
+  const gap = openGap - (openGap - minGap) * constriction;
+  const spacePct = Math.round((gap / openGap) * 100);
+
+  const wall = (sign: 1 | -1) => {
+    const yEnds = midY - sign * openGap;
+    const yMid = midY - sign * gap;
+    const yOuter = sign === 1 ? -12 : H + 12;
+    return [
+      `M 0 ${yEnds}`,
+      `C ${W * 0.28} ${yEnds}, ${W * 0.34} ${yMid}, ${W / 2} ${yMid}`,
+      `C ${W * 0.66} ${yMid}, ${W * 0.72} ${yEnds}, ${W} ${yEnds}`,
+      `L ${W} ${yOuter} L 0 ${yOuter} Z`,
+    ].join(' ');
+  };
+
+  return (
+    <div className="airway">
+      <div className="airway-head">
+        <span className="mono airway-label">Interactive · Airway</span>
+        <span className="mono airway-value">{spacePct}% space</span>
+      </div>
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Airway narrowing illustration">
+        <path className="airway-wall" d={wall(1)} />
+        <path className="airway-wall" d={wall(-1)} />
+        <path className="airway-edge" d={wall(1).split(' L ')[0]} />
+        <path className="airway-edge" d={wall(-1).split(' L ')[0]} />
+        <line
+          className="airway-flow"
+          x1={-40}
+          y1={midY}
+          x2={W}
+          y2={midY}
+          style={{
+            strokeWidth: Math.max(2, gap * 0.45),
+            opacity: Math.max(0, 1 - constriction * 1.05),
+          }}
+        />
+      </svg>
+      <input
+        type="range"
+        min={0}
+        max={100}
+        value={constriction * 100}
+        aria-label="Airway narrowing"
+        onChange={e => setConstriction(Number(e.target.value) / 100)}
+      />
+      <p className="airway-caption">
+        {constriction > 0.85
+          ? 'No space. No time. No oxygen.'
+          : 'Drag to narrow the airway — space, time and oxygen run out.'}
+      </p>
+    </div>
+  );
+};
+
 const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState('');
   const [scrolled, setScrolled] = useState(false);
@@ -114,13 +178,16 @@ const App: React.FC = () => {
       </section>
 
       <section className="sec problem" id="c-problem">
-        <div className="sec-inner reveal">
-          <span className="eyebrow">◆ Main problem</span>
-          <h2><em>NO</em> space<br /><em>no</em> time<br /><em>no</em> oxygen.</h2>
-          <p className="lead">
-            The key determinants of outcome are the number of attempts, and the time to effective
-            ventilation.
-          </p>
+        <div className="sec-inner reveal problem-grid">
+          <div>
+            <span className="eyebrow">◆ Main problem</span>
+            <h2><em>NO</em> space<br /><em>no</em> time<br /><em>no</em> oxygen.</h2>
+            <p className="lead">
+              The key determinants of outcome are the number of attempts, and the time to effective
+              ventilation.
+            </p>
+          </div>
+          <AirwayInteractive />
         </div>
       </section>
 
