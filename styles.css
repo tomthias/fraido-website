@@ -177,94 +177,6 @@ body {
 .problem h2 em { font-style: normal; color: var(--accent2); }
 .problem .lead { color: rgba(255, 255, 255, 0.72); max-width: 950px; margin: 0; }
 
-/* ---------- AIRWAY INTERACTIVE ---------- */
-.problem-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
-  align-items: center;
-}
-.airway {
-  border: 1px solid rgba(125, 180, 230, 0.25);
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 20px;
-  padding: 26px 28px 22px;
-}
-.airway-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 10px;
-}
-.airway-label {
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
-}
-.airway-value {
-  font-size: 14px;
-  color: var(--accent2);
-}
-.airway svg { display: block; width: 100%; height: auto; }
-.airway-wall { fill: #16405e; }
-.airway-edge {
-  fill: none;
-  stroke: var(--accent2);
-  stroke-width: 2.5;
-  stroke-linecap: round;
-}
-.airway-flow {
-  stroke: var(--accent2);
-  stroke-dasharray: 16 22;
-  stroke-linecap: round;
-  animation: airway-flow 1.1s linear infinite;
-  transition: opacity 0.2s;
-}
-@keyframes airway-flow {
-  to { stroke-dashoffset: -38; }
-}
-.airway input[type='range'] {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 4px;
-  margin: 22px 0 14px;
-  border-radius: 100px;
-  background: rgba(255, 255, 255, 0.22);
-  outline-offset: 4px;
-  cursor: pointer;
-}
-.airway input[type='range']::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--accent2);
-  border: 3px solid var(--navy);
-  box-shadow: 0 0 0 1.5px var(--accent2);
-}
-.airway input[type='range']::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--accent2);
-  border: 3px solid var(--navy);
-  box-shadow: 0 0 0 1.5px var(--accent2);
-}
-.airway-caption {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.55);
-  min-height: 42px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .airway-flow { animation: none; }
-}
-
 /* ---------- IDEA ---------- */
 .idea-grid {
   display: grid;
@@ -434,7 +346,6 @@ body {
   .adv { grid-template-columns: repeat(2, 1fr); }
   .idea-grid { grid-template-columns: 1fr; }
   .problem h2 { font-size: 46px; }
-  .problem-grid { grid-template-columns: 1fr; gap: 44px; }
 }
 
 @media (max-width: 800px) {
