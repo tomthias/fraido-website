@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "motion-ui": {
+      "source": "affaan-m/everything-claude-code",
+      "sourceType": "github",
+      "skillPath": "skills/motion-ui/SKILL.md",
+      "computedHash": "63411a4e8804b8ede6e7647de461563fdf1b04e90a1fa165d2aca4f4d673e046"
+    }
+  }
+}
