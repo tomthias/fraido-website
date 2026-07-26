@@ -65,7 +65,16 @@ body {
   margin: 0 auto;
   padding: 0;
 }
-.nav ul a { font: 600 15px Montserrat, sans-serif; color: var(--muted); }
+.nav ul a { font: 600 15px Montserrat, sans-serif; color: var(--muted); position: relative; }
+.nav-underline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -7px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+}
 .nav ul a:hover { color: var(--navy); }
 .nav ul a.active { color: var(--navy); }
 .nav-cta {
@@ -122,9 +131,8 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  transition: transform 0.15s, background 0.15s;
+  transition: background 0.15s;
 }
-.btn:hover { transform: translateY(-2px); }
 .btn-fill { background: var(--accent); color: #fff; }
 .btn-ghost { background: transparent; color: #fff; border: 1.5px solid rgba(255, 255, 255, 0.5); }
 .btn-ghost:hover { background: rgba(255, 255, 255, 0.1); }
@@ -174,6 +182,22 @@ body {
 .problem { background: var(--navy); color: #fff; text-align: left; }
 .problem .eyebrow { color: var(--accent2); background: rgba(125, 180, 230, 0.14); }
 .problem h2 { font-size: 58px; color: #fff; }
+.problem h2 .hline { display: block; }
+.problem .caret {
+  display: inline-block;
+  width: 5px;
+  height: 0.72em;
+  margin-left: 8px;
+  border-radius: 2px;
+  background: var(--accent2);
+  animation: caret-blink 0.8s step-end infinite;
+}
+@keyframes caret-blink {
+  50% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .problem .caret { display: none; }
+}
 .problem h2 em { font-style: normal; color: var(--accent2); }
 .problem .lead { color: rgba(255, 255, 255, 0.72); max-width: 950px; margin: 0; }
 
@@ -275,7 +299,6 @@ body {
   box-shadow: 0 15px 37px -25px rgba(12, 40, 59, 0.3);
   transition: transform 0.15s;
 }
-.rcard:hover { transform: translateY(-3px); }
 .rcard .tag {
   font: 600 12px 'IBM Plex Mono', monospace;
   letter-spacing: 0.1em;
@@ -299,7 +322,6 @@ body {
   gap: 8px;
   transition: transform 0.15s, background 0.15s, color 0.15s;
 }
-.rcard .act:hover { transform: translateY(-2px); }
 .act-view { background: var(--accent); color: #fff; }
 .act-dl { background: transparent; color: var(--navy); border: 1.5px solid var(--navy); }
 .act-dl:hover { background: var(--navy); color: #fff; }

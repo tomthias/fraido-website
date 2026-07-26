@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { motion, useReducedMotion, type Variants } from 'motion/react';
+import { motionTokens } from './motionTokens';
 
 const NAV_LINKS = [
   { id: 'c-challenge', label: 'Challenge' },
@@ -19,9 +21,120 @@ const ADVISORS = [
   { img: 'assets/adv-markle.jpg', name: 'Andrew Markle', desc: 'Anesthetist · Quality management, Saint Mary hospital' },
 ];
 
+// Tactile feedback for buttons and CTAs
+const pressable = {
+  whileHover: { scale: 1.02 },
+  whileTap: { scale: 0.97 },
+  transition: { duration: motionTokens.duration.fast, ease: motionTokens.easing.sharp },
+};
+
+const viewportOnce = { once: true, amount: 0.15 };
+
+// Typewriter headline for the problem section: types the three negations
+// once when scrolled into view; instant with prefers-reduced-motion.
+const PROBLEM_LINES = [
+  { em: 'NO', rest: ' space' },
+  { em: 'no', rest: ' time' },
+  { em: 'no', rest: ' oxygen.' },
+];
+const LINE_LENGTHS = PROBLEM_LINES.map(l => l.em.length + l.rest.length);
+const LINE_STARTS = LINE_LENGTHS.reduce<number[]>((acc, _, i) => {
+  acc.push(i === 0 ? 0 : acc[i - 1] + LINE_LENGTHS[i - 1]);
+  return acc;
+}, []);
+const TOTAL_CHARS = LINE_STARTS[LINE_STARTS.length - 1] + LINE_LENGTHS[LINE_LENGTHS.length - 1];
+const CHAR_MS = 40;
+const LINE_PAUSE_MS = 220;
+
+const ProblemHeadline: React.FC = () => {
+  const reduce = useReducedMotion();
+  const [started, setStarted] = useState(false);
+  const [count, setCount] = useState(0);
+  const ref = useRef<HTMLHeadingElement>(null);
+
+  const done = reduce || count >= TOTAL_CHARS;
+
+  useEffect(() => {
+    if (reduce) return;
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStarted(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.6 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [reduce]);
+
+  useEffect(() => {
+    if (!started || done) return;
+    // one continuous sequence: fast tick within a line, brief hold when
+    // the caret drops to the next line
+    const atLineBreak = LINE_STARTS.includes(count) && count > 0;
+    const id = setTimeout(() => setCount(c => c + 1), atLineBreak ? LINE_PAUSE_MS : CHAR_MS);
+    return () => clearTimeout(id);
+  }, [started, done, count]);
+
+  // the single caret sits on the line currently being typed
+  const activeLine = LINE_STARTS.reduce((active, s, i) => (count >= s ? i : active), 0);
+
+  return (
+    <h2 ref={ref} aria-label="NO space, no time, no oxygen.">
+      {PROBLEM_LINES.map((line, i) => {
+        const typed = reduce
+          ? LINE_LENGTHS[i]
+          : Math.max(0, Math.min(count - LINE_STARTS[i], LINE_LENGTHS[i]));
+        const emTyped = line.em.slice(0, typed);
+        const restTyped = line.rest.slice(0, Math.max(0, typed - line.em.length));
+        const showCaret = !done && started && i === activeLine;
+        return (
+          <span className="hline" key={line.em + line.rest} aria-hidden="true">
+            {typed === 0 && !showCaret ? ' ' : (
+              <>
+                <em>{emTyped}</em>
+                {restTyped}
+                {showCaret && <span className="caret" />}
+              </>
+            )}
+          </span>
+        );
+      })}
+    </h2>
+  );
+};
+
 const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState('');
   const [scrolled, setScrolled] = useState(false);
+  const reduce = useReducedMotion();
+
+  const variants = useMemo(() => {
+    const fadeUp = (distance: number): Variants => ({
+      hidden: { opacity: 0, y: reduce ? 0 : distance },
+      visible: {
+        opacity: 1,
+        y: 0,
+        transition: { duration: motionTokens.duration.normal, ease: motionTokens.easing.smooth },
+      },
+    });
+    return {
+      heroContainer: {
+        hidden: {},
+        visible: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
+      } as Variants,
+      heroItem: fadeUp(motionTokens.distance.md),
+      gridContainer: {
+        hidden: {},
+        visible: { transition: { staggerChildren: 0.07 } },
+      } as Variants,
+      gridItem: fadeUp(motionTokens.distance.sm),
+    };
+  }, [reduce]);
 
   // Glass effect on the nav once the page starts scrolling
   useEffect(() => {
@@ -50,7 +163,7 @@ const App: React.FC = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Gentle scroll reveals
+  // Gentle scroll reveals for header blocks and plain sections
   useEffect(() => {
     const els = Array.from(document.querySelectorAll('.reveal'));
     const observer = new IntersectionObserver(
@@ -77,47 +190,64 @@ const App: React.FC = () => {
             <li key={link.id}>
               <a href={`#${link.id}`} className={activeSection === link.id ? 'active' : undefined}>
                 {link.label}
+                {activeSection === link.id && (
+                  <motion.span
+                    className="nav-underline"
+                    layoutId="nav-underline"
+                    transition={{ duration: motionTokens.duration.fast, ease: motionTokens.easing.smooth }}
+                  />
+                )}
               </a>
             </li>
           ))}
         </ul>
-        <a className="nav-cta" href="mailto:info@fraido.it">Contact</a>
+        <motion.a className="nav-cta" href="mailto:info@fraido.it" {...pressable}>Contact</motion.a>
       </nav>
 
-      <header className="hero">
-        <span className="hero-badge">Difficult intubation, solved</span>
-        <img className="hero-logo" src="assets/logo-white.png" alt="Fraido" />
-        <p className="hero-pay"><b>Intubation</b>Easy · Fast · Safe</p>
-        <div className="hero-btns">
-          <a className="btn btn-fill" href="#c-challenge">The Challenge →</a>
-          <a className="btn btn-ghost" href="#c-idea">Our Idea</a>
-        </div>
-      </header>
+      <motion.header className="hero" variants={variants.heroContainer} initial="hidden" animate="visible">
+        <motion.span className="hero-badge" variants={variants.heroItem}>Difficult intubation, solved</motion.span>
+        <motion.img className="hero-logo" src="assets/logo-white.png" alt="Fraido" variants={variants.heroItem} />
+        <motion.p className="hero-pay" variants={variants.heroItem}><b>Intubation</b>Easy · Fast · Safe</motion.p>
+        <motion.div className="hero-btns" variants={variants.heroItem}>
+          <motion.a className="btn btn-fill" href="#c-challenge" {...pressable}>The Challenge →</motion.a>
+          <motion.a className="btn btn-ghost" href="#c-idea" {...pressable}>Our Idea</motion.a>
+        </motion.div>
+      </motion.header>
 
       <section className="sec" id="c-challenge">
-        <div className="sec-inner reveal">
-          <span className="eyebrow">◆ The Challenge</span>
-          <h2>Difficult Intubation</h2>
-          <p className="lead">
-            Intubation inserts a tube through the mouth or nose into the trachea to keep an airway
-            open — a critical intervention to support breathing, deliver oxygen and administer
-            medication. This life-saving technique is performed in and out of hospital, in civil and
-            military settings, on critically ill patients unable to breathe on their own.
-          </p>
-          <div className="chips">
-            <span>Stenosis</span>
-            <span>Anatomical abnormalities</span>
-            <span>A foreign body</span>
-            <span>An emergency</span>
+        <div className="sec-inner">
+          <div className="reveal">
+            <span className="eyebrow">◆ The Challenge</span>
+            <h2>Difficult Intubation</h2>
+            <p className="lead">
+              Intubation inserts a tube through the mouth or nose into the trachea to keep an airway
+              open — a critical intervention to support breathing, deliver oxygen and administer
+              medication. This life-saving technique is performed in and out of hospital, in civil and
+              military settings, on critically ill patients unable to breathe on their own.
+            </p>
           </div>
+          <motion.div
+            className="chips"
+            variants={variants.gridContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportOnce}
+          >
+            <motion.span variants={variants.gridItem}>Stenosis</motion.span>
+            <motion.span variants={variants.gridItem}>Anatomical abnormalities</motion.span>
+            <motion.span variants={variants.gridItem}>A foreign body</motion.span>
+            <motion.span variants={variants.gridItem}>An emergency</motion.span>
+          </motion.div>
         </div>
       </section>
 
       <section className="sec problem" id="c-problem">
-        <div className="sec-inner reveal">
-          <span className="eyebrow">◆ Main problem</span>
-          <h2><em>NO</em> space<br /><em>no</em> time<br /><em>no</em> oxygen.</h2>
-          <p className="lead">
+        <div className="sec-inner">
+          <div className="reveal">
+            <span className="eyebrow">◆ Main problem</span>
+          </div>
+          <ProblemHeadline />
+          <p className="lead reveal">
             The key determinants of outcome are the number of attempts, and the time to effective
             ventilation.
           </p>
@@ -157,66 +287,90 @@ const App: React.FC = () => {
       </section>
 
       <section className="sec band" id="c-team">
-        <div className="sec-inner reveal">
-          <span className="eyebrow">◆ Our Team</span>
-          <h2>The people behind Fraido</h2>
-          <div className="team">
-            <div className="tcard">
+        <div className="sec-inner">
+          <div className="reveal">
+            <span className="eyebrow">◆ Our Team</span>
+            <h2>The people behind Fraido</h2>
+          </div>
+          <motion.div
+            className="team"
+            variants={variants.gridContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportOnce}
+          >
+            <motion.div className="tcard" variants={variants.gridItem}>
               <div className="mono-av">AV</div>
               <h4>Antonio Maria Vizioli</h4>
               <div className="role">CEO</div>
               <p>Nurse · 5 years in the Emergency Department.</p>
-            </div>
-            <div className="tcard">
+            </motion.div>
+            <motion.div className="tcard" variants={variants.gridItem}>
               <div className="mono-av">EF</div>
               <h4>Elia Fregonese</h4>
               <div className="role">CTO</div>
               <p>Materials & Nanotech Engineer · 4 years in the space sector.</p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       <section className="sec" id="c-adv">
-        <div className="sec-inner reveal">
-          <span className="eyebrow">◆ Our Advisors</span>
-          <h2>Medical & product expertise</h2>
-          <div className="adv">
+        <div className="sec-inner">
+          <div className="reveal">
+            <span className="eyebrow">◆ Our Advisors</span>
+            <h2>Medical & product expertise</h2>
+          </div>
+          <motion.div
+            className="adv"
+            variants={variants.gridContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportOnce}
+          >
             {ADVISORS.map(a => (
-              <div className="acard" key={a.name}>
+              <motion.div className="acard" key={a.name} variants={variants.gridItem}>
                 <img className="avatar" src={a.img} alt={a.name} loading="lazy" decoding="async" width={80} height={80} />
                 <h5>{a.name}</h5>
                 <span>{a.desc}</span>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       <section className="sec band" id="c-res">
-        <div className="sec-inner reveal">
-          <span className="eyebrow">◆ Resources</span>
-          <h2>Decks & presentations</h2>
-          <div className="res">
-            <div className="rcard">
+        <div className="sec-inner">
+          <div className="reveal">
+            <span className="eyebrow">◆ Resources</span>
+            <h2>Decks & presentations</h2>
+          </div>
+          <motion.div
+            className="res"
+            variants={variants.gridContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportOnce}
+          >
+            <motion.div className="rcard" variants={variants.gridItem} whileHover={{ y: -3 }}>
               <span className="tag">PDF · Overview</span>
               <h4>Short deck</h4>
               <p>A concise overview of Fraido, the problem and the solution.</p>
               <div className="actions">
-                <a className="act act-view" href="assets/Short_Deck.pdf" target="_blank" rel="noreferrer">View deck →</a>
-                <a className="act act-dl" href="assets/Short_Deck.pdf" download="Fraido_Short_Deck.pdf">Download ↓</a>
+                <motion.a className="act act-view" href="assets/Short_Deck.pdf" target="_blank" rel="noreferrer" {...pressable}>View deck →</motion.a>
+                <motion.a className="act act-dl" href="assets/Short_Deck.pdf" download="Fraido_Short_Deck.pdf" {...pressable}>Download ↓</motion.a>
               </div>
-            </div>
-            <div className="rcard">
+            </motion.div>
+            <motion.div className="rcard" variants={variants.gridItem} whileHover={{ y: -3 }}>
               <span className="tag">PDF · Full</span>
               <h4>Detailed deck</h4>
               <p>The complete technical and business case, in depth.</p>
               <div className="actions">
-                <a className="act act-view" href="assets/Detailed_Deck.pdf" target="_blank" rel="noreferrer">View deck →</a>
-                <a className="act act-dl" href="assets/Detailed_Deck.pdf" download="Fraido_Detailed_Deck.pdf">Download ↓</a>
+                <motion.a className="act act-view" href="assets/Detailed_Deck.pdf" target="_blank" rel="noreferrer" {...pressable}>View deck →</motion.a>
+                <motion.a className="act act-dl" href="assets/Detailed_Deck.pdf" download="Fraido_Detailed_Deck.pdf" {...pressable}>Download ↓</motion.a>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
