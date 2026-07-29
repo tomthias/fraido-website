@@ -12,7 +12,7 @@ const NAV_LINKS = [
 ];
 
 const ADVISORS = [
-  { img: 'assets/adv-chiara.png', name: 'Chiara Sansovini', desc: 'Anesthetist · Co-author of Stargate' },
+  { img: 'assets/adv-chiara.jpg', name: 'Chiara Sansovini', desc: 'Anesthetist · Co-author of Stargate' },
   { img: 'assets/adv-bellani.jpg', name: 'Prof. Giacomo Bellani', desc: 'Anesthetist · Professor & ICU chief' },
   { img: 'assets/adv-garroni.png', name: 'Marco Garroni', desc: 'Anesthetist · Difficult airways instructor' },
   { img: 'assets/adv-righetti.png', name: 'Roberto Righetti', desc: 'Anesthetist · Difficult airways instructor' },
@@ -215,29 +215,14 @@ const App: React.FC = () => {
       </motion.header>
 
       <section className="sec" id="c-challenge">
-        <div className="sec-inner">
-          <div className="reveal">
-            <span className="eyebrow">◆ The Challenge</span>
-            <h2>Difficult Intubation</h2>
-            <p className="lead">
-              Intubation inserts a tube through the mouth or nose into the trachea to keep an airway
-              open — a critical intervention to support breathing, deliver oxygen and administer
-              medication. This life-saving technique is performed in and out of hospital, in civil and
-              military settings, on critically ill patients unable to breathe on their own.
-            </p>
-          </div>
-          <motion.div
-            className="chips"
-            variants={variants.gridContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={viewportOnce}
-          >
-            <motion.span variants={variants.gridItem}>Stenosis</motion.span>
-            <motion.span variants={variants.gridItem}>Anatomical abnormalities</motion.span>
-            <motion.span variants={variants.gridItem}>A foreign body</motion.span>
-            <motion.span variants={variants.gridItem}>An emergency</motion.span>
-          </motion.div>
+        <div className="sec-inner reveal">
+          <span className="eyebrow">◆ The Challenge</span>
+          <h2>Difficult Intubation</h2>
+          <p className="lead">
+            A critical procedure done to secure a patient's airways, deliver oxygen and administer
+            medication. This life-saving technique is performed in and out of hospital, in civil and
+            military settings, on either healthy or critically ill patients.
+          </p>
         </div>
       </section>
 
@@ -248,8 +233,8 @@ const App: React.FC = () => {
           </div>
           <ProblemHeadline />
           <p className="lead reveal">
-            The key determinants of outcome are the number of attempts, and the time to effective
-            ventilation.
+            Outcomes depend mainly on the number of attempts and how quickly effective ventilation is
+            achieved.
           </p>
         </div>
       </section>
@@ -260,8 +245,8 @@ const App: React.FC = () => {
           <h2>Two steps, two devices</h2>
           <p className="lead">
             A combination of fixed-diameter devices is often used to reach an anatomical spot — like
-            a guidewire and a tube. A 2-step, 2-device procedure that costs precious attempts and
-            time.
+            a guidewire and a tube. A 2-step, 2-device procedure that costs attempts, time and
+            oxygen.
           </p>
         </div>
       </section>
@@ -300,13 +285,13 @@ const App: React.FC = () => {
             viewport={viewportOnce}
           >
             <motion.div className="tcard" variants={variants.gridItem}>
-              <img className="avatar tavatar" src="assets/team-antonio.jpg" alt="Antonio Maria Vizioli" loading="lazy" decoding="async" width={120} height={120} />
+              <img className="avatar tavatar" src="assets/team-antonio.jpg" alt="Antonio Maria Vizioli" loading="lazy" decoding="async" width={190} height={190} />
               <h4>Antonio Maria Vizioli</h4>
               <div className="role">CEO</div>
               <p>Nurse · 5 years in the Emergency Department.</p>
             </motion.div>
             <motion.div className="tcard" variants={variants.gridItem}>
-              <img className="avatar tavatar" src="assets/team-elia.jpg" alt="Elia Fregonese" loading="lazy" decoding="async" width={120} height={120} />
+              <img className="avatar tavatar" src="assets/team-elia.jpg" alt="Elia Fregonese" loading="lazy" decoding="async" width={190} height={190} />
               <h4>Elia Fregonese</h4>
               <div className="role">CTO</div>
               <p>Materials & Nanotech Engineer · 4 years in the space sector.</p>
@@ -383,8 +368,26 @@ const App: React.FC = () => {
       </section>
 
       <footer className="foot">
-        <img src="assets/logo-white.png" alt="Fraido" />
-        <span>© Fraido · 2026 · All rights reserved</span>
+        <div className="foot-top">
+          <div className="foot-brand">
+            <img src="assets/logo-white.png" alt="Fraido" />
+            <a href="mailto:info@fraido.it">info@fraido.it</a>
+          </div>
+          <address className="foot-legal">
+            <b>Fraido Srl</b>
+            Via Roberto da San Severino 95 · 38122 Trento (TN) · Italy<br />
+            VAT no. / Tax code 02802400222<br />
+            Trento Companies Register · REA no. TN-250967<br />
+            Share capital €10,000.00
+          </address>
+        </div>
+        <div className="foot-bar">
+          <span>© Fraido Srl · 2026 · All rights reserved</span>
+          <nav className="foot-links">
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="cookie.html">Cookie Policy</a>
+          </nav>
+        </div>
       </footer>
     </div>
   );
