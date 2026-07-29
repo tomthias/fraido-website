@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { motion, useReducedMotion, type Variants } from 'motion/react';
+import { AnimatePresence, motion, useReducedMotion, type Variants } from 'motion/react';
 import { motionTokens } from './motionTokens';
 
 const NAV_LINKS = [
@@ -105,6 +105,62 @@ const ProblemHeadline: React.FC = () => {
         );
       })}
     </h2>
+  );
+};
+
+// Informational cookie notice. The site sets no cookies, so there is nothing to
+// consent to — this only points visitors to the Cookie Policy and is dismissed
+// once, remembered in localStorage.
+const NOTICE_KEY = 'fraido-cookie-notice';
+
+const CookieNotice: React.FC = () => {
+  const reduce = useReducedMotion();
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    let seen = false;
+    try {
+      seen = localStorage.getItem(NOTICE_KEY) === 'dismissed';
+    } catch {
+      // private browsing / storage disabled — show it, just don't persist
+    }
+    if (!seen) {
+      const id = setTimeout(() => setOpen(true), 900);
+      return () => clearTimeout(id);
+    }
+  }, []);
+
+  const dismiss = () => {
+    setOpen(false);
+    try {
+      localStorage.setItem(NOTICE_KEY, 'dismissed');
+    } catch {
+      /* nothing to persist to */
+    }
+  };
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          className="cookie-notice"
+          role="dialog"
+          aria-label="Cookie notice"
+          initial={{ opacity: 0, y: reduce ? 0 : 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: reduce ? 0 : 16 }}
+          transition={{ duration: motionTokens.duration.normal, ease: motionTokens.easing.smooth }}
+        >
+          <p>
+            This site uses <b>no tracking or profiling cookies</b>. Only the technical data needed to
+            serve the page is processed — details in our <a href="cookie.html">Cookie Policy</a>.
+          </p>
+          <motion.button type="button" className="cookie-ok" onClick={dismiss} {...pressable}>
+            Got it
+          </motion.button>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 
@@ -389,6 +445,8 @@ const App: React.FC = () => {
           </nav>
         </div>
       </footer>
+
+      <CookieNotice />
     </div>
   );
 };

@@ -363,6 +363,54 @@ body {
 .foot-links a { color: rgba(255, 255, 255, 0.7); }
 .foot-links a:hover, .foot-brand a:hover { color: #fff; text-decoration: underline; }
 
+/* ---------- COOKIE NOTICE ---------- */
+.cookie-notice {
+  position: fixed;
+  z-index: 60;
+  left: 24px;
+  bottom: 24px;
+  max-width: 460px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 20px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 22px 50px -22px rgba(12, 40, 59, 0.45);
+}
+.cookie-notice p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.cookie-notice b { color: var(--ink); font-weight: 700; }
+.cookie-notice a { color: var(--accent); text-decoration: underline; }
+.cookie-ok {
+  flex-shrink: 0;
+  font: 700 13px Montserrat, sans-serif;
+  color: #fff;
+  background: var(--navy);
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 20px;
+  cursor: pointer;
+}
+.cookie-ok:hover { background: var(--accent); }
+
+@media (max-width: 560px) {
+  .cookie-notice {
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+    max-width: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+}
+
 /* ---------- LEGAL PAGES (privacy.html, cookie.html) ---------- */
 .legal { max-width: 820px; margin: 0 auto; padding: 130px 28px 90px; }
 .legal-back {
