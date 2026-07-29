@@ -300,13 +300,13 @@ const App: React.FC = () => {
             viewport={viewportOnce}
           >
             <motion.div className="tcard" variants={variants.gridItem}>
-              <div className="mono-av">AV</div>
+              <img className="avatar tavatar" src="assets/team-antonio.jpg" alt="Antonio Maria Vizioli" loading="lazy" decoding="async" width={120} height={120} />
               <h4>Antonio Maria Vizioli</h4>
               <div className="role">CEO</div>
               <p>Nurse · 5 years in the Emergency Department.</p>
             </motion.div>
             <motion.div className="tcard" variants={variants.gridItem}>
-              <div className="mono-av">EF</div>
+              <img className="avatar tavatar" src="assets/team-elia.jpg" alt="Elia Fregonese" loading="lazy" decoding="async" width={120} height={120} />
               <h4>Elia Fregonese</h4>
               <div className="role">CTO</div>
               <p>Materials & Nanotech Engineer · 4 years in the space sector.</p>
