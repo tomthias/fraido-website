@@ -13,7 +13,8 @@ const NAV_LINKS = [
 
 const ADVISORS = [
   { img: 'assets/adv-chiara.jpg', name: 'Chiara Sansovini', desc: 'Anesthetist · Co-author of Stargate' },
-  { img: 'assets/adv-bellani.jpg', name: 'Prof. Giacomo Bellani', desc: 'Anesthetist · Professor & ICU chief' },
+  { img: 'assets/adv-piccioni.jpg', name: 'Prof. Federico Piccioni', desc: 'Anesthetist · Professor of anesthesia & Head of ICU, Humanitas Hospital' },
+  { img: 'assets/adv-bellani.jpg', name: 'Prof. Giacomo Bellani', desc: 'Anesthetist · Professor & ICU chief, Trento Hospital' },
   { img: 'assets/adv-garroni.png', name: 'Marco Garroni', desc: 'Anesthetist · Difficult airways instructor' },
   { img: 'assets/adv-righetti.png', name: 'Roberto Righetti', desc: 'Anesthetist · Difficult airways instructor' },
   { img: 'assets/adv-bonvini.png', name: 'Stefano Bonvini', desc: 'Vascular Surgeon · Chief of vascular surgery, Trento' },
