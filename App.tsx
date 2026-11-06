@@ -8,7 +8,16 @@ const NAV_LINKS = [
   { id: 'c-idea', label: 'Idea' },
   { id: 'c-team', label: 'Team' },
   { id: 'c-adv', label: 'Advisors' },
-  { id: 'c-res', label: 'Resources' },
+  { id: 'c-backed', label: 'Backed by' },
+];
+
+const BACKERS = [
+  { img: 'assets/backed-trentino-sviluppo.png', name: 'Trentino Sviluppo', w: 700, h: 180 },
+  { img: 'assets/backed-lake-como-venture-lab.png', name: 'Lake Como Venture Lab', w: 700, h: 196 },
+  { img: 'assets/backed-switch2product.png', name: 'Switch 2 Product Innovation Challenge', w: 700, h: 328 },
+  { img: 'assets/backed-i3p.png', name: 'I3P', w: 662, h: 215 },
+  { img: 'assets/backed-euregio.png', name: 'Euregio Tirol Südtirol Trentino', w: 254, h: 261 },
+  { img: 'assets/backed-forbes-under-30.png', name: 'Forbes Under 30', w: 702, h: 388 },
 ];
 
 const ADVISORS = [
@@ -381,6 +390,30 @@ const App: React.FC = () => {
         </div>
       </section>
 
+      <section className="sec band" id="c-backed">
+        <div className="sec-inner">
+          <div className="reveal">
+            <span className="eyebrow">◆ Backed by</span>
+            <h2>Supported by</h2>
+          </div>
+          <motion.div
+            className="backers"
+            variants={variants.gridContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={viewportOnce}
+          >
+            {BACKERS.map(b => (
+              <motion.div className="bcard" key={b.name} variants={variants.gridItem}>
+                <img src={b.img} alt={b.name} loading="lazy" decoding="async" width={b.w} height={b.h} />
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Decks section hidden for now — restore by removing the `false &&` guard and re-adding 'c-res' to NAV_LINKS */}
+      {false && (
       <section className="sec band" id="c-res">
         <div className="sec-inner">
           <div className="reveal">
@@ -415,6 +448,7 @@ const App: React.FC = () => {
           </motion.div>
         </div>
       </section>
+      )}
 
       <section className="sec contact" id="c-contact">
         <div className="sec-inner reveal">
